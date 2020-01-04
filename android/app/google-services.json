@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "445481932014",
+    "firebase_url": "https://messengerger-d04c1.firebaseio.com",
+    "project_id": "messengerger-d04c1",
+    "storage_bucket": "messengerger-d04c1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445481932014:android:7f139e0add032e56f70fff",
+        "android_client_info": {
+          "package_name": "com.npptoo.messengerger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "445481932014-j7qdetmvrhcun001jrka0q7lju7e8tvg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUVNpMRysrBxJ8XZkTIZqglzFq9HXPCBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "445481932014-j7qdetmvrhcun001jrka0q7lju7e8tvg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
