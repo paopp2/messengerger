@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messengerger/screens/register_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/all_people_list_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
       routes: {
         LoginScreen.id: (context) => LoginScreen(),
         RegisterScreen.id: (context) => RegisterScreen(),
+        AllPeopleListScreen.id: (context) => AllPeopleListScreen(),
       },
     );
   }
