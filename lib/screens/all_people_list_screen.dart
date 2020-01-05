@@ -5,7 +5,7 @@ import 'package:messengerger/components/my_sliver_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:messengerger/screens/chat_screen.dart';
+import 'package:messengerger/components/my_bottom_navigation_bar.dart';
 
 final _firestore = Firestore.instance;
 final _fireAuth = FirebaseAuth.instance;
@@ -25,11 +25,21 @@ class AllPeopleListScreen extends StatefulWidget {
 }
 
 class _AllPeopleListScreenState extends State<AllPeopleListScreen> {
+  FirebaseUser user;
+
+  void getCurrentUser() async{
+    var tempUser = await _fireAuth.currentUser();
+    if(tempUser == null) {
+      tempUser = ModalRoute.of(context).settings.arguments;
+    }
+    setState(() {
+      user = tempUser;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    FirebaseUser user = ModalRoute.of(context).settings.arguments;
-
+    getCurrentUser();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -66,33 +76,11 @@ class _AllPeopleListScreenState extends State<AllPeopleListScreen> {
             ];
           },
           body: UsersStream(
-            currentUserEmail: user.email,
+            currentUserEmail: (user != null) ? user.email : '?',
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            title: Text('Chats'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            title: Text('People'),
-          ),
-        ],
-        onTap: (index) {
-          switch(index) {
-            case 0: {
-              Navigator.pushNamed(context, ChatScreen.id);
-            }
-            break;
-            case 1: {
-              Navigator.pushNamed(context, AllPeopleListScreen.id, arguments: user);
-            }
-          }
-        },
-      ),
+      bottomNavigationBar: MyBottomNavigationBar(user: user),
     );
   }
 }
@@ -193,7 +181,7 @@ class UsersStream extends StatelessWidget {
     return Container(
       child: StreamBuilder<QuerySnapshot>(
         stream: (isFriends) ?
-            usersRef.document(currentUserEmail).collection('friends').snapshots()
+          (currentUserEmail != null) ? usersRef.document(currentUserEmail).collection('friends').snapshots() : null
           : usersRef.orderBy('username').snapshots(),
         builder: (context, snapshot) {
           if(!snapshot.hasData) {
