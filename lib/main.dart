@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:messengerger/screens/chat_screen.dart';
 import 'package:messengerger/screens/register_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/all_people_list_screen.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
         LoginScreen.id: (context) => LoginScreen(),
         RegisterScreen.id: (context) => RegisterScreen(),
         AllPeopleListScreen.id: (context) => AllPeopleListScreen(),
+        ChatScreen.id: (context) => ChatScreen(),
       },
     );
   }

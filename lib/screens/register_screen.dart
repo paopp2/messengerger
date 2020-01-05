@@ -133,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         final user = await fireAuth.currentUser();
                         print(user.email);
                         try {
-                          var ref = await fireStore.collection('users').add({
+                          var ref = await fireStore.collection('users').document(email).setData({
                             'username' : username,
                             'email' : email,
                             'password' : password,

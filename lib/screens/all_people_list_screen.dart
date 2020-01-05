@@ -1,16 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:messengerger/components/sliver_app_bar_delegate.dart';
 import 'package:messengerger/components/my_sliver_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:messengerger/screens/chat_screen.dart';
 
 final _firestore = Firestore.instance;
 final _fireAuth = FirebaseAuth.instance;
-
 bool isFriends = true;
+
+void showAddedToFriendsSnackBar(String username, BuildContext context) {
+  Scaffold.of(context).showSnackBar(SnackBar(
+    content: Text('$username added to friends'),
+    duration: Duration(milliseconds: 500),
+  ));
+}
 
 class AllPeopleListScreen extends StatefulWidget {
   static const id = 'all_people_list_screen';
@@ -22,8 +28,7 @@ class _AllPeopleListScreenState extends State<AllPeopleListScreen> {
   @override
   Widget build(BuildContext context) {
 
-    final FirebaseUser user = ModalRoute.of(context).settings.arguments;
-    print('Current user: ${user.email}');
+    FirebaseUser user = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -60,7 +65,9 @@ class _AllPeopleListScreenState extends State<AllPeopleListScreen> {
               ),
             ];
           },
-          body: UsersStream(),
+          body: UsersStream(
+            currentUserEmail: user.email,
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -74,10 +81,29 @@ class _AllPeopleListScreenState extends State<AllPeopleListScreen> {
             title: Text('People'),
           ),
         ],
+        onTap: (index) {
+          switch(index) {
+            case 0: {
+              Navigator.pushNamed(context, ChatScreen.id);
+            }
+            break;
+            case 1: {
+              Navigator.pushNamed(context, AllPeopleListScreen.id, arguments: user);
+            }
+          }
+        },
       ),
     );
   }
 }
+
+class myDefaultTabController extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
 
 class PersonListTile extends StatelessWidget {
   PersonListTile({this.username, this.email, this.onPressed});
@@ -166,7 +192,9 @@ class UsersStream extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: StreamBuilder<QuerySnapshot>(
-        stream: usersRef.orderBy('username').snapshots(),
+        stream: (isFriends) ?
+            usersRef.document(currentUserEmail).collection('friends').snapshots()
+          : usersRef.orderBy('username').snapshots(),
         builder: (context, snapshot) {
           if(!snapshot.hasData) {
             return Center(
@@ -185,11 +213,17 @@ class UsersStream extends StatelessWidget {
               username: username,
               email: email,
               onPressed: () {
-                //TODO: add to firestore friends
-                //use the currentUserEmail
+                var userFriendsRef = _firestore.collection('users').document(currentUserEmail).collection('friends');
+                userFriendsRef.document(email).setData(
+                    {
+                      'username' : username,
+                      'email' : email,
+                    }
+                );
+                showAddedToFriendsSnackBar(username, context);
               },
             );
-            personListTiles.add(personListTile);
+            if(personListTile.email != currentUserEmail) personListTiles.add(personListTile);
           }
           return ListView.builder(
             itemCount: personListTiles.length,
@@ -202,3 +236,5 @@ class UsersStream extends StatelessWidget {
     );
   }
 }
+
+//TODO: Switch between chats and people
