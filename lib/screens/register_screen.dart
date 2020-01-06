@@ -5,7 +5,7 @@ import 'package:messengerger/components/important_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:messengerger/constants.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'all_people_list_screen.dart';
+import 'people_list_screen.dart';
 
 final fireAuth = FirebaseAuth.instance;
 final fireStore = Firestore.instance;
@@ -141,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           showLoadingCircle(false);
                           Navigator.pushNamed(
                               context,
-                              AllPeopleListScreen.id,
+                              PeopleListScreen.id,
                               arguments: user,
                           );
                         } on PlatformException catch (error) {
