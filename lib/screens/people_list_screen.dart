@@ -128,6 +128,7 @@ class PersonListTile extends StatelessWidget {
             username,
             style: TextStyle(
               fontSize: 30,
+              fontWeight: FontWeight.bold,
             ),
           ),
           Text(
@@ -213,6 +214,7 @@ class UsersStream extends StatelessWidget {
             final personListTile = PersonListTile(
               username: username,
               email: email,
+
               onTilePressed: () {
                 if(isFriends) {
                   Navigator.pushNamed(
@@ -222,6 +224,7 @@ class UsersStream extends StatelessWidget {
                   );
                 }
               },
+
               onAddFriendIconPressed: () {
                 var userFriendsRef = _firestore.collection('users').document(currentUserEmail).collection('friends');
                 var addedUserFriendsRef = _firestore.collection('users').document(email).collection('friends');

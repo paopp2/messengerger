@@ -75,10 +75,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
                     FlatButton(
-                      onPressed: () {
+                      onPressed: () async {
                         messageTextController.clear();
                         String user1 = thisUser.email;
                         String user2 = otherUserData['email'];
+                        String user2Username = otherUserData['username'];
                         String roomName = (user1.compareTo(user2) < 0) ? user1+'_'+user2 : user2+'_'+user1;
                         _firestore.collection('chat_rooms')
                             .document(roomName)
@@ -90,6 +91,37 @@ class _ChatScreenState extends State<ChatScreen> {
                                   'timestamp' : Timestamp.now(),
                                 }
                         );
+                        _firestore.collection('users')
+                            .document(user1)
+                            .collection('chat_rooms')
+                            .document(roomName)
+                            .setData(
+                          {
+                            'sender' : thisUser.email,
+                            'receiver' : user2,
+                            'username' : user2Username,
+                            'last_message' : messageText,
+                            'timestamp' : Timestamp.now(),
+                          }
+                        );
+
+                        void addToOtherChatRoom() async {
+                          DocumentSnapshot result = await _firestore.collection('users').document(user1).get();
+                          _firestore.collection('users')
+                              .document(user2)
+                              .collection('chat_rooms')
+                              .document(roomName)
+                              .setData(
+                          {
+                          'sender' : thisUser.email,
+                          'receiver' : user1,
+                          'receiver_username' : result.data['username'],
+                          'last_message' : messageText,
+                          'timestamp' : Timestamp.now(),
+                          }
+                          );
+                        }
+                        addToOtherChatRoom();
                       },
                       child: Text(
                         'Send',
@@ -111,10 +143,12 @@ class MessagesStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String user1 = thisUser.email;
-    String user2 = otherUserData['email'];
+
+    //if pushed from people_list_screen user, get 'email'
+    //else if pushed from chat_list_screen, get 'receiver'
+    String user2 = otherUserData['email'] ?? otherUserData['receiver'];
     String roomName = (user1.compareTo(user2) < 0) ? user1+'_'+user2 : user2+'_'+user1;
     return StreamBuilder<QuerySnapshot>(
-//      stream: _firestore.collection('messages').orderBy('timestamp').snapshots(),
       stream: _firestore.collection('chat_rooms')
           .document(roomName)
           .collection('messages')
@@ -129,7 +163,7 @@ class MessagesStream extends StatelessWidget {
         final messages = snapshot.data.documents.reversed;
         List<MessageBubble> messageBubbles = [];
         for (var message in messages) {
-          final messageText = message.data['text'];
+          final messageText = message.data['text'] ?? message.data['last_message'];
           final messageSender = message.data['sender'];
           final currentUser = thisUser.email;
 
