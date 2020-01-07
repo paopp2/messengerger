@@ -142,7 +142,7 @@ class ChatsStream extends StatelessWidget {
     return Container(
       child: StreamBuilder<QuerySnapshot>(
         stream:
-            (currentUserEmail != null) ? userChatRoomsRef.snapshots() : null,
+            (currentUserEmail != null) ? userChatRoomsRef.orderBy('timestamp').snapshots() : null,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
@@ -163,12 +163,12 @@ class ChatsStream extends StatelessWidget {
             if (chatLists != null) {
               for (var chat in chatLists) {
                 final receiver = chat.data['receiver'];
-                final receiverUsername = chat.data['username'] ?? chat.data['receiver_username'];
+                final receiverUsername = chat.data['username'];
                 final sender = chat.data['sender'];
                 final lastMessage = chat.data['last_message'];
                 var chatListTile = ChatListTile(
                   receiver: receiver,
-                  receiverUsername: receiverUsername,
+                  receiverUsername: receiverUsername ?? 'Error 2',
                   sender: (currentUserEmail == sender) ? 'You' : receiverUsername,
                   lastMessage: lastMessage,
 
