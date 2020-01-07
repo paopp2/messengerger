@@ -183,7 +183,7 @@ class ChatsStream extends StatelessWidget {
             if (chatLists != null) {
               for (var chat in chatLists) {
                 final receiver = chat.data['receiver'];
-                final receiverUsername = chat.data['username'] ?? chat.data['receiver_username'];
+                final receiverUsername = chat.data['receiver_username'];
                 final sender = chat.data['sender'];
                 final lastMessage = chat.data['last_message'];
                 var chatListTile = ChatListTile(

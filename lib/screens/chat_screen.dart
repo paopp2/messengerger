@@ -46,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
               }),
         ],
         title: Text(
-            (otherUserData != null) ? otherUserData['username'] : 'Something else',
+            otherUserData['username'] ?? otherUserData['receiver_username'],
             style: TextStyle(
               fontSize: 25,
             ),
@@ -83,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         messageTextController.clear();
                         String user1 = thisUser.email;
                         String user2 = otherUserData['email'];
-                        String user2Username = otherUserData['username'];
+                        String user2Username = otherUserData['username'] ?? otherUserData['receiver_username'];
                         String roomName = (user1.compareTo(user2) < 0) ? user1+'_'+user2 : user2+'_'+user1;
                         _firestore.collection('chat_rooms')
                             .document(roomName)
@@ -169,7 +169,7 @@ class MessagesStream extends StatelessWidget {
         final messages = snapshot.data.documents.reversed;
         List<MessageBubble> messageBubbles = [];
         for (var message in messages) {
-          final messageText = message.data['text'] ?? message.data['last_message'];
+          final messageText = message.data['text'];
           final messageSender = message.data['sender'];
           final currentUser = thisUser.email;
 
@@ -228,7 +228,7 @@ class MessageBubble extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Text(
-                '$text',
+                '$text' ?? 'Maybe this one',
                 style: TextStyle(
                   fontSize: 20,
                 ),
