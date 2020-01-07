@@ -21,7 +21,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = new TextEditingController();
   String messageText;
 
-
   void getUsersInRoom() async{
     var tempUser = await _fireAuth.currentUser();
     var tempOtherUserData = ModalRoute.of(context).settings.arguments;
@@ -46,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
               }),
         ],
         title: Text(
-            otherUserData['username'] ?? otherUserData['receiver_username'],
+            (otherUserData != null) ? otherUserData['username'] : 'Something else',
             style: TextStyle(
               fontSize: 25,
             ),
@@ -82,9 +81,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       onPressed: () async {
                         messageTextController.clear();
                         String user1 = thisUser.email;
-                        String user2 = otherUserData['email'];
-                        String user2Username = otherUserData['username'] ?? otherUserData['receiver_username'];
+                        String user2 = otherUserData['email'] ?? otherUserData['receiver'];
                         String roomName = (user1.compareTo(user2) < 0) ? user1+'_'+user2 : user2+'_'+user1;
+                        String user2Username = otherUserData['username'];
                         _firestore.collection('chat_rooms')
                             .document(roomName)
                             .collection('messages')
@@ -116,13 +115,13 @@ class _ChatScreenState extends State<ChatScreen> {
                               .collection('chat_rooms')
                               .document(roomName)
                               .setData(
-                          {
-                          'sender' : thisUser.email,
-                          'receiver' : user1,
-                          'receiver_username' : result.data['username'],
-                          'last_message' : messageText,
-                          'timestamp' : Timestamp.now(),
-                          }
+                            {
+                              'sender' : thisUser.email,
+                              'receiver' : user1,
+                              'receiver_username' : result.data['username'],
+                              'last_message' : messageText,
+                              'timestamp' : Timestamp.now(),
+                            }
                           );
                         }
                         addToOtherChatRoom();
@@ -169,7 +168,7 @@ class MessagesStream extends StatelessWidget {
         final messages = snapshot.data.documents.reversed;
         List<MessageBubble> messageBubbles = [];
         for (var message in messages) {
-          final messageText = message.data['text'];
+          final messageText = message.data['text'] ?? message.data['last_message'];
           final messageSender = message.data['sender'];
           final currentUser = thisUser.email;
 
@@ -228,7 +227,7 @@ class MessageBubble extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Text(
-                '$text' ?? 'Maybe this one',
+                '$text',
                 style: TextStyle(
                   fontSize: 20,
                 ),

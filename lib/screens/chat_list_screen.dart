@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:messengerger/screens/chat_screen.dart';
 import 'people_list_screen.dart';
-import 'dart:io';
 
 final _fireAuth = FirebaseAuth.instance;
 final _firestore = Firestore.instance;
@@ -25,25 +24,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
     setState(() {
       user = tempUser;
     });
-  }
-
-  Future<bool> _onBackPressed() {
-    return showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Are you sure?'),
-        content: new Text('Exit app?'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Yes'),
-            onPressed: () {
-              exit(0);
-              return true;
-            },
-          ),
-        ],
-      ),
-    ) ?? false;
   }
 
   @override
@@ -129,14 +109,14 @@ class ChatListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    receiverUsername ?? 'Error',
+                    receiverUsername,
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    '$sender: $lastMessage' ?? 'Error2',
+                    '$sender: $lastMessage',
                   ),
                 ],
               ),
@@ -183,7 +163,7 @@ class ChatsStream extends StatelessWidget {
             if (chatLists != null) {
               for (var chat in chatLists) {
                 final receiver = chat.data['receiver'];
-                final receiverUsername = chat.data['receiver_username'];
+                final receiverUsername = chat.data['username'] ?? chat.data['receiver_username'];
                 final sender = chat.data['sender'];
                 final lastMessage = chat.data['last_message'];
                 var chatListTile = ChatListTile(
@@ -191,6 +171,7 @@ class ChatsStream extends StatelessWidget {
                   receiverUsername: receiverUsername,
                   sender: (currentUserEmail == sender) ? 'You' : receiverUsername,
                   lastMessage: lastMessage,
+
                   onTilePressed: () {
                     Navigator.pushNamed(
                       context,
@@ -198,6 +179,7 @@ class ChatsStream extends StatelessWidget {
                       arguments: chat.data,
                     );
                   },
+
                 );
                 chatListTiles.add(chatListTile);
               }
