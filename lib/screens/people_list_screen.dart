@@ -255,11 +255,13 @@ class UsersStream extends StatelessWidget {
             );
             if(personListTile.email != currentUserEmail) personListTiles.add(personListTile);
           }
-          return ListView.builder(
+          return (personListTiles.length != 0) ? ListView.builder(
             itemCount: personListTiles.length,
             itemBuilder: (context, index) {
               return personListTiles[index];
             },
+          ) : Center(
+            child: Text('No friends yet'),
           );
         },
       ),

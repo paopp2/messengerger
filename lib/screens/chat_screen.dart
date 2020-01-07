@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:messengerger/constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 final _fireAuth = FirebaseAuth.instance;
 final _firestore = Firestore.instance;
@@ -17,6 +20,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = new TextEditingController();
   String messageText;
+
 
   void getUsersInRoom() async{
     var tempUser = await _fireAuth.currentUser();
@@ -156,8 +160,10 @@ class MessagesStream extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if(!snapshot.hasData) {
-          return CircularProgressIndicator(
-            backgroundColor: Colors.blue,
+          return Center(
+            child: SpinKitRing(
+              color: Colors.blue,
+            ),
           );
         }
         final messages = snapshot.data.documents.reversed;

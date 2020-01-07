@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:messengerger/components/important_button.dart';
+import 'package:messengerger/screens/chat_list_screen.dart';
 import 'package:messengerger/screens/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:flutter/services.dart';
 import 'package:messengerger/constants.dart';
-import 'people_list_screen.dart';
 
 const welcomeMessage =
 '''Welcome to 
@@ -125,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             showLoadingCircle(false);
                             Navigator.pushNamed(
                               context,
-                              PeopleListScreen.id,
+                              ChatListScreen.id,
                               arguments: result.user,
                             );
                           } on PlatformException catch (error) {
